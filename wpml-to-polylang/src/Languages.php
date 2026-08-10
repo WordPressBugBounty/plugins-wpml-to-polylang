@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.6
+ * Language import.
  *
  * @package wpml-to-polylang
  */
@@ -46,7 +46,7 @@ class Languages extends AbstractAction {
 	 * @return void
 	 */
 	protected function handle() {
-		$predefinedLanguages = include POLYLANG_DIR . '/settings/languages.php';
+		$predefinedLanguages = include POLYLANG_DIR . '/src/settings/languages.php';
 
 		$wpmlLanguages = $this->getWPMLLanguages();
 		$wpmlLanguages = $this->orderLanguages( $wpmlLanguages );
@@ -59,40 +59,8 @@ class Languages extends AbstractAction {
 			$lang['rtl']  = isset( $predefinedLanguages[ $lang['locale'] ]['dir'] ) && 'rtl' === $predefinedLanguages[ $lang['locale'] ]['dir'] ? 1 : 0;
 			$lang['flag'] = isset( $predefinedLanguages[ $lang['locale'] ]['flag'] ) ? $predefinedLanguages[ $lang['locale'] ]['flag'] : '';
 
-			PLL()->model->add_language( $lang );
+			PLL()->model->languages->add( $lang );
 		}
-
-		$this->cleanup();
-	}
-
-	/**
-	 * Deletes the language and translation group of the default category to avoid a conflict later.
-	 *
-	 * @since 0.5
-	 *
-	 * @return void
-	 */
-	protected function cleanup() {
-		$termIds = get_terms(
-			[
-				'taxonomy'   => 'term_translations',
-				'hide_empty' => false,
-				'fields'     => 'ids',
-			]
-		);
-
-		if ( is_array( $termIds ) ) {
-			foreach ( $termIds as $termId ) {
-				wp_delete_term( $termId, 'term_translations' );
-			}
-		}
-
-		$defaultCat = get_option( 'default_category' );
-		if ( is_numeric( $defaultCat ) ) {
-			wp_delete_object_term_relationships( (int) $defaultCat, 'term_language' );
-		}
-
-		PLL()->model->clean_languages_cache(); // Update the languages list.
 	}
 
 	/**

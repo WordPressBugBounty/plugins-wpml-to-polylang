@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd3c4ac92bfea374da524d616c514c105
+class ComposerStaticInit091c4e9600072a66590f92e3a4fbf2c1
 {
     public static $prefixLengthsPsr4 = array (
         'W' => 
@@ -21,26 +21,15 @@ class ComposerStaticInitd3c4ac92bfea374da524d616c514c105
     );
 
     public static $classMap = array (
-        'WP_Syntex\\WPML_To_Polylang\\AbstractAction' => __DIR__ . '/../..' . '/src/AbstractAction.php',
-        'WP_Syntex\\WPML_To_Polylang\\AbstractObjects' => __DIR__ . '/../..' . '/src/AbstractObjects.php',
-        'WP_Syntex\\WPML_To_Polylang\\AbstractSteppable' => __DIR__ . '/../..' . '/src/AbstractSteppable.php',
-        'WP_Syntex\\WPML_To_Polylang\\Languages' => __DIR__ . '/../..' . '/src/Languages.php',
-        'WP_Syntex\\WPML_To_Polylang\\Menus' => __DIR__ . '/../..' . '/src/Menus.php',
-        'WP_Syntex\\WPML_To_Polylang\\NoLangObjects' => __DIR__ . '/../..' . '/src/NoLangObjects.php',
-        'WP_Syntex\\WPML_To_Polylang\\Options' => __DIR__ . '/../..' . '/src/Options.php',
-        'WP_Syntex\\WPML_To_Polylang\\Page' => __DIR__ . '/../..' . '/src/Page.php',
-        'WP_Syntex\\WPML_To_Polylang\\Plugin' => __DIR__ . '/../..' . '/src/Plugin.php',
-        'WP_Syntex\\WPML_To_Polylang\\Posts' => __DIR__ . '/../..' . '/src/Posts.php',
-        'WP_Syntex\\WPML_To_Polylang\\Strings' => __DIR__ . '/../..' . '/src/Strings.php',
-        'WP_Syntex\\WPML_To_Polylang\\Terms' => __DIR__ . '/../..' . '/src/Terms.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd3c4ac92bfea374da524d616c514c105::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd3c4ac92bfea374da524d616c514c105::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitd3c4ac92bfea374da524d616c514c105::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit091c4e9600072a66590f92e3a4fbf2c1::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit091c4e9600072a66590f92e3a4fbf2c1::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit091c4e9600072a66590f92e3a4fbf2c1::$classMap;
 
         }, null, ClassLoader::class);
     }

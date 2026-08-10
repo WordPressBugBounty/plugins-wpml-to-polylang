@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.6
+ * Admin page.
  *
  * @package wpml-to-polylang
  */
@@ -107,7 +107,6 @@ class Page {
 			?>
 		</div>
 		<?php
-
 	}
 
 	/**
@@ -181,7 +180,7 @@ class Page {
 				$checks[] = __( 'Your version of Polylang is too old. Please update.', 'wpml-to-polylang' );
 			}
 
-			if ( PLL()->model->get_languages_list() ) {
+			if ( PLL()->model->languages->get_list() ) {
 				$checks[] = __( 'Polylang has already been installed on this website. Impossible to run the import.', 'wpml-to-polylang' );
 			}
 		}

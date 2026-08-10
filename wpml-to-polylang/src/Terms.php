@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.6
+ * Term import.
  *
  * @package wpml-to-polylang
  */
@@ -15,6 +15,16 @@ defined( 'ABSPATH' ) || exit;
  * @since 0.5
  */
 class Terms extends AbstractObjects {
+	/**
+	 * Returns the type of the object.
+	 *
+	 * @since 0.7
+	 *
+	 * @return string
+	 */
+	protected function getObjectType() {
+		return 'term';
+	}
 
 	/**
 	 * Returns the action name.
@@ -48,7 +58,7 @@ class Terms extends AbstractObjects {
 	protected function getLanguageTermTaxonomyIds() {
 		$languages = [];
 
-		foreach ( PLL()->model->get_languages_list() as $lang ) {
+		foreach ( PLL()->model->languages->get_list() as $lang ) {
 			$languages[ $lang->slug ] = $lang->get_tax_prop( 'term_language', 'term_taxonomy_id' );
 		}
 
@@ -99,7 +109,9 @@ class Terms extends AbstractObjects {
 	protected function getWPMLTranslationIds() {
 		global $wpdb;
 
-		$trids = $wpdb->get_col(
+		$batch_size = $this->getBatchSyze();
+		$offset     = ( $this->step * $batch_size ) - $batch_size;
+		$trids      = $wpdb->get_col(
 			sprintf(
 				"SELECT DISTINCT wpml.trid
 				FROM {$wpdb->term_taxonomy} AS tt
@@ -109,8 +121,8 @@ class Terms extends AbstractObjects {
 				WHERE tt.taxonomy IN ( '%s' )
 				LIMIT %d, %d",
 				implode( "', '", esc_sql( $this->getTranslatedTaxonomies() ) ),
-				absint( $this->step * WPML_TO_POLYLANG_QUERY_BATCH_SIZE - WPML_TO_POLYLANG_QUERY_BATCH_SIZE ),
-				absint( WPML_TO_POLYLANG_QUERY_BATCH_SIZE )
+				absint( $offset ),
+				absint( $batch_size )
 			)
 		);
 
@@ -167,6 +179,7 @@ class Terms extends AbstractObjects {
 			$icl_taxonomies = array_keys( $settings['taxonomies_sync_option'] );
 			$icl_taxonomies = array_filter( $icl_taxonomies, 'is_string' );
 			$taxonomies     = array_merge( $taxonomies, $icl_taxonomies );
+			$taxonomies     = array_unique( $taxonomies );
 		}
 
 		$taxonomies = array_diff( $taxonomies, [ 'wp_theme', 'wp_template_part_area' ] );

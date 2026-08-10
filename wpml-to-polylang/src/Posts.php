@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.6
+ * Post import.
  *
  * @package wpml-to-polylang
  */
@@ -15,6 +15,16 @@ defined( 'ABSPATH' ) || exit;
  * @since 0.5
  */
 class Posts extends AbstractObjects {
+	/**
+	 * Returns the type of the object.
+	 *
+	 * @since 0.7
+	 *
+	 * @return string
+	 */
+	protected function getObjectType() {
+		return 'post';
+	}
 
 	/**
 	 * Returns the action name.
@@ -48,7 +58,7 @@ class Posts extends AbstractObjects {
 	protected function getLanguageTermTaxonomyIds() {
 		$languages = [];
 
-		foreach ( PLL()->model->get_languages_list() as $lang ) {
+		foreach ( PLL()->model->languages->get_list() as $lang ) {
 			$languages[ $lang->slug ] = $lang->get_tax_prop( 'language', 'term_taxonomy_id' );
 		}
 
@@ -96,15 +106,17 @@ class Posts extends AbstractObjects {
 	protected function getWPMLTranslationIds() {
 		global $wpdb;
 
-		$trids = $wpdb->get_col(
+		$batch_size = $this->getBatchSyze();
+		$offset     = ( $this->step * $batch_size ) - $batch_size;
+		$trids      = $wpdb->get_col(
 			sprintf(
 				"SELECT DISTINCT trid
 				FROM {$wpdb->prefix}icl_translations
 				WHERE SUBSTR( element_type, 6 ) IN ( '%s' )
 				LIMIT %d, %d",
 				implode( "', '", esc_sql( $this->getTranslatedPostTypes() ) ),
-				absint( $this->step * WPML_TO_POLYLANG_QUERY_BATCH_SIZE - WPML_TO_POLYLANG_QUERY_BATCH_SIZE ),
-				absint( WPML_TO_POLYLANG_QUERY_BATCH_SIZE )
+				absint( $offset ),
+				absint( $batch_size )
 			)
 		);
 
@@ -154,10 +166,11 @@ class Posts extends AbstractObjects {
 		$types    = [ 'post', 'page', 'wp_block' ];
 		$settings = get_option( 'icl_sitepress_settings' );
 
-		if ( is_array( $settings ) && is_array( $settings['taxonomies_sync_option'] ) ) {
+		if ( is_array( $settings ) && is_array( $settings['custom_posts_sync_option'] ) ) {
 			$icl_types = array_keys( $settings['custom_posts_sync_option'] );
 			$icl_types = array_filter( $icl_types, 'is_string' );
 			$types     = array_merge( $types, $icl_types );
+			$types     = array_unique( $types );
 		}
 
 		$types = array_diff( $types, [ 'wp_template' ] );

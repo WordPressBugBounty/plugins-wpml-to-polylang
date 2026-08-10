@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.6
+ * Plugin bootstrap.
  *
  * @package wpml-to-polylang
  */
@@ -16,17 +16,6 @@ defined( 'ABSPATH' ) || exit;
  */
 class Plugin {
 	/**
-	 * Uses PLL_Admin_Model to be able to create languages.
-	 *
-	 * @since 0.5
-	 *
-	 * @return string
-	 */
-	public function filterModel() {
-		return 'PLL_Admin_Model';
-	}
-
-	/**
 	 * Initializes the plugin.
 	 *
 	 * @since 0.5
@@ -34,8 +23,6 @@ class Plugin {
 	 * @return void
 	 */
 	public function init() {
-		add_filter( 'pll_model', [ $this, 'filterModel' ] );
-
 		$actions = [
 			new Languages(),
 			new Posts(),
@@ -44,6 +31,7 @@ class Plugin {
 			new NoLangObjects(),
 			new Strings(),
 			new Options(),
+			new ACFFields(),
 		];
 
 		$nextAction = '';
@@ -59,5 +47,20 @@ class Plugin {
 
 		$page = new Page( reset( $actions )->getName() );
 		$page->addHooks();
+
+		add_action( 'pll_init', [ $this, 'fixConflicts' ], 999 ); // After PLLWC.
+	}
+
+	/**
+	 * Prevent Polylang for WooCommerce to create default product categories.
+	 *
+	 * @since 0.7
+	 *
+	 * @return void
+	 */
+	public function fixConflicts() {
+		if ( function_exists( 'PLLWC' ) ) {
+			remove_action( 'admin_init', [ PLLWC(), 'maybe_upgrade' ] );
+		}
 	}
 }

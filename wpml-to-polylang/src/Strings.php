@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.6
+ * String translation import.
  *
  * @package wpml-to-polylang
  */
@@ -53,7 +53,7 @@ class Strings extends AbstractSteppable {
 		}
 
 		foreach ( $stringTranslations as $lang => $strings ) {
-			$language = PLL()->model->get_language( $lang );
+			$language = PLL()->model->languages->get( $lang );
 
 			if ( empty( $language ) ) {
 				continue;
@@ -101,7 +101,8 @@ class Strings extends AbstractSteppable {
 	protected function getWPMLStringsTranslations() {
 		global $wpdb;
 
-		$offset = ( $this->step * WPML_TO_POLYLANG_QUERY_BATCH_SIZE ) - WPML_TO_POLYLANG_QUERY_BATCH_SIZE;
+		$batch_size = $this->getBatchSyze();
+		$offset     = ( $this->step * $batch_size ) - $batch_size;
 
 		/**
 		 * WPML string translations.
@@ -117,7 +118,7 @@ class Strings extends AbstractSteppable {
 				LIMIT %d, %d",
 				implode( "', '", esc_sql( $this->getDomains() ) ),
 				absint( $offset ),
-				absint( WPML_TO_POLYLANG_QUERY_BATCH_SIZE )
+				absint( $batch_size )
 			)
 		);
 
